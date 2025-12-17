@@ -18,6 +18,7 @@
         font-family: 'Orbitron', sans-serif;
         user-select: none;
       }
+      /* Mensaje inicial */
       #root:empty::before {
         content: "INITIALIZING_AOD_CORE...";
         position: absolute;
@@ -33,7 +34,45 @@
         0%, 100% { opacity: 0.2; }
         50% { opacity: 1; }
       }
+
+      /* Depurador de errores en pantalla */
+      #debug-overlay {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        background: rgba(40, 0, 0, 0.9);
+        border: 1px solid #ff0000;
+        color: #ff4444;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        padding: 15px;
+        z-index: 9999;
+        display: none;
+        max-height: 30vh;
+        overflow: auto;
+      }
     </style>
+
+    <!-- Sistema de Captura de Errores antes de React -->
+    <script>
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        const debug = document.getElementById('debug-overlay');
+        if (debug) {
+          debug.style.display = 'block';
+          debug.innerHTML += `<div>[FATAL_ERROR]: ${msg}<br/>@ ${url}:${lineNo}</div>`;
+        }
+        return false;
+      };
+      window.addEventListener('unhandledrejection', function(event) {
+        const debug = document.getElementById('debug-overlay');
+        if (debug) {
+          debug.style.display = 'block';
+          debug.innerHTML += `<div>[ASYNC_ERROR]: ${event.reason}</div>`;
+        }
+      });
+    </script>
+
     <script type="importmap">
 {
   "imports": {
@@ -49,6 +88,12 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <div id="debug-overlay"><strong>SISTEMA DE DEPURACIÓN ACTIVO</strong><br/></div>
+    
+    <!-- Script de entrada con manejo de errores de carga -->
+    <script type="module">
+      import "./index.tsx";
+      console.log("AOD_CORE: Script index.tsx solicitado exitosamente.");
+    </script>
   </body>
 </html>
