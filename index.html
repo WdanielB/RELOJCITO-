@@ -6,35 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>NOVA AOD</title>
+    <title>AOD NOVA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100;400;700&display=swap" rel="stylesheet">
     <style>
       body {
         margin: 0;
-        background-color: black;
-        color: #ff0000;
+        background: #000;
+        color: #f00;
         overflow: hidden;
         font-family: 'Orbitron', sans-serif;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
       }
+      #root { width: 100vw; height: 100vh; background-color: black; }
       #root:empty::before {
-        content: "NUCLEO_SYNCING...";
+        content: "NUCLEO_BOOTING...";
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         font-family: 'JetBrains Mono', monospace;
         font-size: 10px;
-        letter-spacing: 1em;
+        letter-spacing: 0.5em;
         color: #ff0000;
-        animation: pulse 1s infinite;
+        animation: pulse 1.5s infinite;
       }
-      @keyframes pulse { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
-      
-      /* Ocultar scrollbars */
-      ::-webkit-scrollbar { display: none; }
+      @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
     </style>
     <script type="importmap">
 {
@@ -42,7 +40,6 @@
     "react": "https://esm.sh/react@19.0.0",
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "d3": "https://esm.sh/d3@7.9.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/"
   }
