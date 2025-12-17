@@ -6,7 +6,7 @@ const OrbitVisualizer: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    if (!svgRef.current || typeof d3 === 'undefined') return;
+    if (!svgRef.current) return;
 
     const render = () => {
       const width = window.innerWidth;
@@ -20,36 +20,42 @@ const OrbitVisualizer: React.FC = () => {
       const g = svg.append('g')
         .attr('transform', `translate(${width / 2}, ${height / 2})`);
 
-      // Rings optimized for horizontal/landscape
-      const rings = [100, 180, 280, 400];
+      // Configuración de anillos orbitales sutiles
+      const rings = [
+        { r: 150, speed: 40000, opacity: 0.03 },
+        { r: 250, speed: 60000, opacity: 0.02 },
+        { r: 350, speed: 80000, opacity: 0.02 },
+        { r: 500, speed: 120000, opacity: 0.01 }
+      ];
       
-      rings.forEach((radius, i) => {
+      rings.forEach((ring, i) => {
+        // El círculo de la órbita
         g.append('circle')
-          .attr('r', radius)
+          .attr('r', ring.r)
           .attr('fill', 'none')
-          .attr('stroke', 'rgba(255, 0, 0, 0.05)')
-          .attr('stroke-width', 0.5);
+          .attr('stroke', 'rgba(255, 0, 0, ' + ring.opacity + ')')
+          .attr('stroke-width', 1);
 
+        // El "satélite" o punto de datos
         const orbitG = g.append('g');
         
         orbitG.append('circle')
-          .attr('r', 2 + Math.random() * 2)
-          .attr('cx', radius)
-          .attr('fill', i % 2 === 0 ? '#ff0000' : '#ff5500')
-          .style('opacity', 0.3);
+          .attr('r', 1.5)
+          .attr('cx', ring.r)
+          .attr('fill', '#ff0000')
+          .style('opacity', 0.2);
 
-        const duration = 20000 + Math.random() * 30000;
-        function repeat() {
+        function animateOrbit() {
           orbitG.transition()
-            .duration(duration)
+            .duration(ring.speed)
             .ease(d3.easeLinear)
             .attrTween('transform', () => {
               const interpolate = d3.interpolate(0, 360);
               return (t) => `rotate(${interpolate(t)})`;
             })
-            .on('end', repeat);
+            .on('end', animateOrbit);
         }
-        repeat();
+        animateOrbit();
       });
     };
 
@@ -64,7 +70,7 @@ const OrbitVisualizer: React.FC = () => {
     <svg 
       ref={svgRef} 
       className="absolute top-0 left-0 pointer-events-none"
-      style={{ opacity: 0.4 }}
+      style={{ filter: 'blur(1px)' }}
     />
   );
 };
