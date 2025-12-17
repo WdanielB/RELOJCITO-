@@ -1,28 +1,24 @@
 
 import React, { useState, useEffect } from 'react';
-import FuturisticClock from './components/FuturisticClock';
-import OrbitVisualizer from './components/OrbitVisualizer';
-import Pomodoro from './components/Pomodoro';
-import { getSystemStatus } from './services/geminiService';
-import { SystemStatus } from './types';
+import FuturisticClock from './components/FuturisticClock.tsx';
+import OrbitVisualizer from './components/OrbitVisualizer.tsx';
+import Pomodoro from './components/Pomodoro.tsx';
+import { getSystemStatus } from './services/geminiService.ts';
+import { SystemStatus } from './types.ts';
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [drift, setDrift] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    // Carga inicial de datos mock
-    const loadStatus = async () => {
-      const data = await getSystemStatus();
-      setStatus(data);
-    };
-    loadStatus();
+    // Carga inicial
+    getSystemStatus().then(setStatus).catch(console.error);
     
-    // Protección contra quemado (Burn-in protection) para pantallas OLED
+    // OLED Burn-in protection: mueve la UI sutilmente
     const driftInterval = setInterval(() => {
       setDrift({
-        x: (Math.random() - 0.5) * 20,
-        y: (Math.random() - 0.5) * 20
+        x: (Math.random() - 0.5) * 30,
+        y: (Math.random() - 0.5) * 30
       });
     }, 60000);
 
@@ -31,32 +27,32 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-screen h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
-      {/* Visualización de fondo */}
+      {/* Fondo Orbital */}
       <div className="absolute inset-0 z-0">
         <OrbitVisualizer />
       </div>
 
-      {/* Interfaz con desplazamiento protector sutil */}
+      {/* Contenedor con Drift */}
       <div 
-        className="relative z-10 flex flex-col items-center justify-center space-y-16 transition-transform duration-[10000ms] ease-in-out"
+        className="relative z-10 flex flex-col items-center justify-center space-y-12 transition-transform duration-[10000ms] ease-in-out"
         style={{ transform: `translate(${drift.x}px, ${drift.y}px)` }}
       >
         <FuturisticClock onStatusUpdate={() => {}} />
         
-        <div className="w-64 sm:w-80">
+        <div className="w-64 sm:w-80 opacity-80 hover:opacity-100 transition-opacity">
           <Pomodoro />
         </div>
       </div>
 
-      {/* Telemetría inferior */}
+      {/* Telemetría inferior estética */}
       <div className="absolute bottom-10 flex flex-col items-center opacity-30 pointer-events-none font-mono">
-        <div className="flex items-center space-x-2 mb-1">
-          <div className="w-1 h-1 bg-red-600 rounded-full animate-pulse"></div>
-          <span className="text-[8px] tracking-[0.4em] text-red-500">AOD_LINK_ACTIVE</span>
+        <div className="flex items-center space-x-3 mb-2">
+          <div className="w-1.5 h-1.5 bg-red-600 rounded-full animate-ping"></div>
+          <span className="text-[9px] tracking-[0.6em] text-red-500 font-bold uppercase">System_Linked</span>
         </div>
-        <span className="text-[10px] text-red-700 uppercase">
-          {status?.message || "CALIBRATING_SENSORS..."}
-        </span>
+        <div className="text-[10px] text-red-700 uppercase tracking-widest text-center max-w-[250px] leading-tight">
+          {status?.message || "CALIBRATING_DATA_STREAM"}
+        </div>
       </div>
     </div>
   );

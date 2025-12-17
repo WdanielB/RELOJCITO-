@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { SystemStatus } from '../types';
+import { SystemStatus } from '../types.ts';
 
 interface FuturisticClockProps {
   onStatusUpdate: (status: SystemStatus) => void;
@@ -20,32 +20,31 @@ const FuturisticClock: React.FC<FuturisticClockProps> = () => {
 
   return (
     <div className="flex flex-col items-center justify-center select-none">
-      {/* Fecha superior */}
-      <div className="text-[10px] text-red-600 font-bold tracking-[0.6em] mb-4 opacity-50 uppercase">
-        {time.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' })}
+      <div className="text-[11px] text-red-600 font-bold tracking-[0.7em] mb-6 opacity-60 uppercase">
+        {time.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'short' })}
       </div>
 
-      {/* Hora principal */}
-      <div className="flex items-center space-x-4">
-        <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(255,0,0,0.3)]">
-          {h}
-        </span>
-        <span className="text-5xl sm:text-7xl font-light text-red-600 animate-pulse">:</span>
-        <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(255,0,0,0.3)]">
-          {m}
-        </span>
-        <div className="flex flex-col justify-end h-16 sm:h-24">
-          <span className="text-2xl sm:text-3xl font-mono text-red-500 font-bold opacity-80">
-            {s}
+      <div className="flex items-center">
+        <div className="flex items-baseline space-x-3">
+          <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_25px_rgba(255,0,0,0.4)]">
+            {h}
           </span>
+          <span className="text-6xl sm:text-7xl font-light text-red-600 animate-pulse">:</span>
+          <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_25px_rgba(255,0,0,0.4)]">
+            {m}
+          </span>
+          <div className="flex flex-col justify-end h-16 sm:h-24 ml-2">
+            <span className="text-2xl sm:text-3xl font-mono text-red-500 font-bold opacity-80">
+              {s}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Línea decorativa HUD */}
-      <div className="mt-8 flex items-center space-x-4 w-full justify-center">
-        <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-red-600"></div>
-        <div className="w-1 h-1 bg-red-600 rotate-45"></div>
-        <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-red-600"></div>
+      <div className="mt-10 flex items-center space-x-6 w-full justify-center opacity-40">
+        <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-red-600"></div>
+        <div className="w-1.5 h-1.5 bg-red-600 rotate-45"></div>
+        <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-red-600"></div>
       </div>
     </div>
   );

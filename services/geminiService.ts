@@ -1,5 +1,5 @@
 
-import { SystemStatus } from "../types";
+import { SystemStatus } from "../types.ts";
 
 const MOCK_MESSAGES = [
   "FLUJO DE PLASMA ESTABLE",
@@ -17,7 +17,6 @@ const MOCK_MESSAGES = [
 const STABILITIES = ["ESTABLE", "ÓPTIMO", "NOMINAL", "SINCRO"];
 
 export const getSystemStatus = async (): Promise<SystemStatus> => {
-  // Generador local de estados para evitar fallos de red o de API Key
   return new Promise((resolve) => {
     setTimeout(() => {
       const randomIndex = Math.floor(Math.random() * MOCK_MESSAGES.length);
