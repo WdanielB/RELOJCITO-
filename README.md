@@ -1,11 +1,13 @@
-<div align="center">
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+# Nova AOD - Futuristic Clock
 
-  <h1>Built with AI Studio</h2>
+Este es un reloj futurista diseñado para pantallas Always-On Display (AOD).
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Despliegue en Heroku
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+1. Crea una nueva aplicación en Heroku.
+2. Conecta tu repositorio de GitHub.
+3. En la pestaña **Settings**, añade un **Config Var** llamado `API_KEY` con tu llave de Google Gemini.
+4. Haz el despliegue de la rama principal.
 
-</div>
+El archivo `server.js` se encargará de servir el contenido automáticamente.
