@@ -1,12 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { SystemStatus } from '../types.ts';
 
-interface FuturisticClockProps {
-  onStatusUpdate: (status: SystemStatus) => void;
-}
-
-const FuturisticClock: React.FC<FuturisticClockProps> = () => {
+const FuturisticClock: React.FC<{ onStatusUpdate: any }> = () => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -19,32 +14,23 @@ const FuturisticClock: React.FC<FuturisticClockProps> = () => {
   const s = time.getSeconds().toString().padStart(2, '0');
 
   return (
-    <div className="flex flex-col items-center justify-center select-none">
-      <div className="text-[11px] text-red-600 font-bold tracking-[0.7em] mb-6 opacity-60 uppercase">
+    <div className="flex flex-col items-center justify-center">
+      <div className="text-[10px] text-red-600 font-bold tracking-[0.5em] mb-8 opacity-40 uppercase">
         {time.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'short' })}
       </div>
 
-      <div className="flex items-center">
-        <div className="flex items-baseline space-x-3">
-          <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_25px_rgba(255,0,0,0.4)]">
-            {h}
-          </span>
-          <span className="text-6xl sm:text-7xl font-light text-red-600 animate-pulse">:</span>
-          <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_25px_rgba(255,0,0,0.4)]">
-            {m}
-          </span>
-          <div className="flex flex-col justify-end h-16 sm:h-24 ml-2">
-            <span className="text-2xl sm:text-3xl font-mono text-red-500 font-bold opacity-80">
-              {s}
-            </span>
-          </div>
-        </div>
+      <div className="flex items-center space-x-4">
+        <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(255,0,0,0.3)]">
+          {h}
+        </span>
+        <span className="text-5xl font-thin text-red-700 animate-pulse">:</span>
+        <span className="text-8xl sm:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(255,0,0,0.3)]">
+          {m}
+        </span>
       </div>
-
-      <div className="mt-10 flex items-center space-x-6 w-full justify-center opacity-40">
-        <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-red-600"></div>
-        <div className="w-1.5 h-1.5 bg-red-600 rotate-45"></div>
-        <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-red-600"></div>
+      
+      <div className="mt-4 flex items-center justify-center w-full">
+         <span className="text-xl font-mono text-red-500 opacity-60 font-bold">{s}</span>
       </div>
     </div>
   );

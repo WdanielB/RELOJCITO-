@@ -1,66 +1,58 @@
 
 import React, { useState, useEffect } from 'react';
-import FuturisticClock from './components/FuturisticClock.tsx';
-import OrbitVisualizer from './components/OrbitVisualizer.tsx';
-import { getSystemStatus } from './services/geminiService.ts';
-import { SystemStatus } from './types.ts';
+import FuturisticClock from './components/FuturisticClock';
+import OrbitVisualizer from './components/OrbitVisualizer';
+import { getSystemStatus } from './services/geminiService';
 
 const App: React.FC = () => {
-  const [status, setStatus] = useState<SystemStatus | null>(null);
+  const [status, setStatus] = useState<any>(null);
   const [drift, setDrift] = useState({ x: 0, y: 0 });
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("APP_CORE: Iniciando servicios de telemetría...");
+    getSystemStatus().then(setStatus).catch(console.error);
     
-    getSystemStatus()
-      .then(setStatus)
-      .catch(err => {
-        console.error("APP_CORE: Error en status:", err);
-        setError("STATUS_LINK_FAILED");
-      });
-    
-    const driftInterval = setInterval(() => {
+    // Burn-in protection (desplazamiento de píxeles)
+    const interval = setInterval(() => {
       setDrift({
-        x: (Math.random() - 0.5) * 40,
-        y: (Math.random() - 0.5) * 40
+        x: (Math.random() - 0.5) * 20,
+        y: (Math.random() - 0.5) * 20
       });
-    }, 120000);
+    }, 60000);
 
-    return () => clearInterval(driftInterval);
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="relative w-screen h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
-      {/* Capa 0: Visualizador Orbital */}
+      {/* Capa de fondo: Órbitas */}
       <div className="absolute inset-0 z-0">
         <OrbitVisualizer />
       </div>
 
-      {/* Capa 1: Reloj y HUD Principal */}
+      {/* Capa de UI: Reloj */}
       <div 
-        className="relative z-10 flex flex-col items-center justify-center transition-transform duration-[10000ms] ease-in-out"
+        className="relative z-10 flex flex-col items-center transition-transform duration-[5000ms] ease-in-out"
         style={{ transform: `translate(${drift.x}px, ${drift.y}px)` }}
       >
         <FuturisticClock onStatusUpdate={() => {}} />
         
-        {/* Placeholder para el Pomodoro si se desea reintroducir después de validar el core */}
-        <div className="mt-12 h-20 flex items-center justify-center">
-          <div className="text-[10px] font-mono text-red-900 tracking-[0.4em] animate-pulse">
-            {error ? `ERROR: ${error}` : 'SCANNING_NEURAL_PATTERNS...'}
+        <div className="mt-20 opacity-20">
+          <div className="h-[1px] w-48 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
+          <div className="text-[8px] font-mono text-red-500 tracking-[1em] text-center mt-4 animate-pulse uppercase">
+            {status?.message || "SYSTEM_STANDBY"}
           </div>
         </div>
       </div>
 
-      {/* Telemetría inferior */}
-      <div className="absolute bottom-10 flex flex-col items-center opacity-40 pointer-events-none font-mono">
-        <div className="flex items-center space-x-3 mb-2">
-          <div className="w-1.5 h-1.5 bg-red-600 rounded-full animate-ping"></div>
-          <span className="text-[9px] tracking-[0.5em] text-red-500 font-bold uppercase">NOVA_AOD_CONNECTED</span>
-        </div>
-        <div className="text-[10px] text-red-700 uppercase tracking-widest text-center">
-          {status?.message || "SYNCHRONIZING_CORE_V3"}
-        </div>
+      {/* Telemetría esquinada */}
+      <div className="absolute bottom-6 left-6 opacity-20 font-mono text-[8px] text-red-500 flex flex-col">
+        <span>LATENCY: 14MS</span>
+        <span>STATUS: {status?.stability || "NOMINAL"}</span>
+      </div>
+      
+      <div className="absolute bottom-6 right-6 opacity-20 font-mono text-[8px] text-red-500 flex flex-col text-right">
+        <span>AOD_V4_CORE</span>
+        <span>NEURAL_LINK: {status?.neuralLink || "READY"}</span>
       </div>
     </div>
   );

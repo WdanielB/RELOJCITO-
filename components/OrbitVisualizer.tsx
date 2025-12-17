@@ -6,8 +6,7 @@ const OrbitVisualizer: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    // Verificación de seguridad para d3
-    if (!svgRef.current || typeof d3 === 'undefined') return;
+    if (!svgRef.current) return;
 
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -20,22 +19,22 @@ const OrbitVisualizer: React.FC = () => {
     const g = svg.append('g')
       .attr('transform', `translate(${width / 2}, ${height / 2})`);
 
-    const rings = [140, 220, 320];
+    const rings = [150, 250, 350];
     
     rings.forEach((r, i) => {
       g.append('circle')
         .attr('r', r)
         .attr('fill', 'none')
-        .attr('stroke', 'rgba(255, 0, 0, 0.05)')
-        .attr('stroke-width', 1);
+        .attr('stroke', 'rgba(255, 0, 0, 0.1)')
+        .attr('stroke-width', 0.5);
 
       const dot = g.append('circle')
-        .attr('r', 1.5)
+        .attr('r', 2)
         .attr('cx', r)
         .attr('fill', '#ff0000')
-        .attr('opacity', 0.2);
+        .attr('opacity', 0.3);
 
-      const speed = 30000 + (i * 20000);
+      const speed = 20000 + (i * 15000);
 
       const animate = () => {
         dot.transition()
@@ -43,20 +42,19 @@ const OrbitVisualizer: React.FC = () => {
           .ease(d3.easeLinear)
           .attrTween('transform', () => {
             const interpolate = d3.interpolate(0, 360);
-            return (t) => `rotate(${interpolate(t)})`;
+            return (t: number) => `rotate(${interpolate(t)})`;
           })
           .on('end', animate);
       };
       animate();
     });
-
   }, []);
 
   return (
     <svg 
       ref={svgRef} 
-      className="absolute top-0 left-0 pointer-events-none opacity-40"
-      style={{ filter: 'blur(1px)' }}
+      className="absolute top-0 left-0 pointer-events-none opacity-50"
+      style={{ filter: 'blur(0.5px)' }}
     />
   );
 };
