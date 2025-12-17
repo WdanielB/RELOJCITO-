@@ -2,12 +2,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import FuturisticClock from './components/FuturisticClock';
 import OrbitVisualizer from './components/OrbitVisualizer';
+import Pomodoro from './components/Pomodoro';
 import { getSystemStatus } from './services/geminiService';
 import { SystemStatus } from './types';
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [drift, setDrift] = useState({ x: 0, y: 0 });
 
   const fetchStatus = async () => {
     const newStatus = await getSystemStatus();
@@ -29,10 +31,20 @@ const App: React.FC = () => {
     document.addEventListener('fullscreenchange', handleFsChange);
     
     fetchStatus();
-    const interval = setInterval(fetchStatus, 300000); // 5 mins status update for mobile battery
+    const interval = setInterval(fetchStatus, 300000);
+
+    // Global drift for AOD protection (applies to both Clock and Pomodoro)
+    const driftTimer = setInterval(() => {
+      setDrift({
+        x: (Math.random() - 0.5) * 20,
+        y: (Math.random() - 0.5) * 30
+      });
+    }, 120000);
+
     return () => {
       document.removeEventListener('fullscreenchange', handleFsChange);
       clearInterval(interval);
+      clearInterval(driftTimer);
     };
   }, []);
 
@@ -44,10 +56,19 @@ const App: React.FC = () => {
         <OrbitVisualizer />
       </div>
 
-      {/* Main UI Layer */}
-      <FuturisticClock onStatusUpdate={setStatus} />
+      {/* Main UI Container with Drift */}
+      <div 
+        className="relative z-10 flex flex-col items-center transition-transform duration-[8000ms] ease-in-out"
+        style={{ transform: `translate(${drift.x}px, ${drift.y}px)` }}
+      >
+        {/* Top Module: Pomodoro */}
+        <Pomodoro />
 
-      {/* Neural Feed Footer - Adjusted for Mobile Safe Areas */}
+        {/* Center Module: Clock */}
+        <FuturisticClock onStatusUpdate={setStatus} />
+      </div>
+
+      {/* Neural Feed Footer */}
       <div className="absolute bottom-10 sm:bottom-12 w-full flex flex-col items-center z-20 px-6 pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center space-x-2 mb-2">
           <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
@@ -60,15 +81,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Corner UI Elements - Hidden or minimized on small mobile */}
-      <div className="absolute top-10 left-10 opacity-20 hidden sm:block">
-        <div className="flex flex-col font-mono text-[9px] text-cyan-400">
-          <span>NOVA_MOBILE_OS</span>
-          <span>S_ID: {Math.random().toString(36).substring(7).toUpperCase()}</span>
-        </div>
-      </div>
-
-      {/* Fullscreen Button - Critical for Mobile AOD experience */}
+      {/* Fullscreen Button */}
       <button 
         onClick={toggleFullscreen}
         className="absolute bottom-4 right-4 z-50 p-2 border border-cyan-500/20 rounded bg-black/40 backdrop-blur-sm active:scale-95 transition-all"
@@ -81,7 +94,7 @@ const App: React.FC = () => {
         </div>
       </button>
 
-      {/* Status Bar Top Right - Mobile Style */}
+      {/* Status Indicators Top Right */}
       <div className="absolute top-4 right-4 flex items-center space-x-1.5 opacity-40">
         <div className="text-[8px] font-mono text-cyan-500 mr-2">{status?.load.toFixed(0) || "0"}%</div>
         {[1, 2, 3, 4].map(i => (
