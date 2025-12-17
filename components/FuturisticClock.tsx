@@ -8,25 +8,12 @@ interface FuturisticClockProps {
 
 const FuturisticClock: React.FC<FuturisticClockProps> = () => {
   const [time, setTime] = useState(new Date());
-  const [drift, setDrift] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTime(new Date());
     }, 1000);
-
-    // Burn-in protection: Small movement every 60 seconds
-    const driftTimer = setInterval(() => {
-      setDrift({
-        x: (Math.random() - 0.5) * 30,
-        y: (Math.random() - 0.5) * 50
-      });
-    }, 60000);
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(driftTimer);
-    };
+    return () => clearInterval(timer);
   }, []);
 
   const formatTime = (date: Date) => {
@@ -37,51 +24,48 @@ const FuturisticClock: React.FC<FuturisticClockProps> = () => {
   };
 
   const { h, m, s } = formatTime(time);
-  const dayName = time.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
-  const dateStr = time.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
+  const dayName = time.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase();
+  const dateStr = time.toLocaleDateString('es-ES', { month: 'short', day: '2-digit' }).toUpperCase();
 
   return (
-    <div 
-      className="relative z-10 flex flex-col items-center justify-center transition-transform duration-[5000ms] ease-in-out px-4"
-      style={{ transform: `translate(${drift.x}px, ${drift.y}px)` }}
-    >
-      {/* Mobile-optimized Date Header */}
-      <div className="mb-2 tracking-[0.5em] text-cyan-400 opacity-60 text-[10px] font-bold animate-pulse">
+    <div className="relative z-10 flex flex-col items-center justify-center px-4 select-none">
+      {/* Date Header */}
+      <div className="mb-2 tracking-[0.5em] text-red-600 opacity-60 text-[10px] font-bold animate-pulse">
         {dayName} // {dateStr}
       </div>
 
-      {/* Main Time Display - Responsive Sizes */}
-      <div className="flex items-baseline space-x-1 sm:space-x-2">
-        <span className="text-7xl sm:text-8xl md:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(0,255,255,0.2)]">
+      {/* Main Time Display */}
+      <div className="flex items-baseline space-x-2 sm:space-x-4">
+        <span className="text-8xl sm:text-9xl md:text-[12rem] font-black text-white tracking-tighter drop-shadow-[0_0_25px_rgba(220,38,38,0.4)]">
           {h}
         </span>
-        <span className="text-5xl sm:text-7xl font-light text-cyan-400 animate-pulse opacity-80">:</span>
-        <span className="text-7xl sm:text-8xl md:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(0,255,255,0.2)]">
+        <span className="text-6xl sm:text-8xl font-light text-red-500 animate-pulse opacity-80">:</span>
+        <span className="text-8xl sm:text-9xl md:text-[12rem] font-black text-white tracking-tighter drop-shadow-[0_0_25px_rgba(220,38,38,0.4)]">
           {m}
         </span>
-        <div className="flex flex-col ml-2 sm:ml-4">
-          <span className="text-xl sm:text-3xl font-mono text-fuchsia-500 font-bold opacity-90">
+        <div className="flex flex-col ml-3">
+          <span className="text-2xl sm:text-4xl font-mono text-red-600 font-bold opacity-90">
             {s}
           </span>
-          <span className="text-[8px] text-cyan-500/50 font-mono tracking-widest hidden sm:block">
-            MS-LINK
+          <span className="text-[10px] text-red-900 font-mono tracking-widest uppercase">
+            Sec_Link
           </span>
         </div>
       </div>
 
-      {/* Decorative HUD lines */}
-      <div className="w-full max-w-[200px] h-[1px] bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent mt-6" />
+      {/* HUD Lines */}
+      <div className="w-full max-w-[300px] h-[1px] bg-gradient-to-r from-transparent via-red-600/40 to-transparent mt-8" />
       
-      <div className="flex space-x-8 sm:space-x-12 mt-4 scale-90 sm:scale-100">
+      <div className="flex space-x-12 mt-6">
         <div className="flex flex-col items-center">
-          <span className="text-[9px] text-gray-600 tracking-widest uppercase font-mono">Neural_Sync</span>
-          <div className="w-12 h-0.5 bg-gray-900 mt-1 rounded-full overflow-hidden">
-            <div className="h-full bg-cyan-400 w-2/3 animate-pulse"></div>
+          <span className="text-[9px] text-red-900 tracking-widest uppercase font-mono">Thermal_Core</span>
+          <div className="w-16 h-1 bg-red-950 mt-1 rounded-full overflow-hidden">
+            <div className="h-full bg-red-600 w-3/4 animate-pulse"></div>
           </div>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-[9px] text-gray-600 tracking-widest uppercase font-mono">Buffer</span>
-          <span className="text-[10px] text-fuchsia-400 font-bold mt-0.5 font-mono">OK</span>
+          <span className="text-[9px] text-red-900 tracking-widest uppercase font-mono">Signal</span>
+          <span className="text-[10px] text-red-500 font-bold mt-0.5 font-mono">NOMINAL</span>
         </div>
       </div>
     </div>

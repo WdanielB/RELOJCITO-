@@ -4,11 +4,16 @@ import { SystemStatus } from "../types";
 
 export const getSystemStatus = async (): Promise<SystemStatus> => {
   try {
-    // Fix: Create a new GoogleGenAI instance right before making an API call to ensure it always uses the most up-to-date API key.
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Comprobación de seguridad para evitar fallos si 'process' no está definido en el navegador
+    const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+    if (!apiKey) {
+      throw new Error("API_KEY_NOT_FOUND");
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: "Generate a futuristic, cyberpunk 'system status' report. Keep it short (max 10 words). Mention things like neural links, quantum flux, or orbital sync.",
+      contents: "Genera un reporte de sistema futurista en rojo. Máximo 10 palabras. Temas: flujo de plasma, núcleo térmico, sincronía orbital.",
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -24,15 +29,14 @@ export const getSystemStatus = async (): Promise<SystemStatus> => {
       }
     });
 
-    // Directly access the .text property of GenerateContentResponse
     return JSON.parse(response.text.trim()) as SystemStatus;
   } catch (error) {
-    console.error("Error fetching system status:", error);
+    console.warn("Estado de sistema en modo local/offline");
     return {
-      message: "SYSTEM ERROR: NEURAL LINK DEGRADED",
-      load: 99.9,
-      stability: "CRITICAL",
-      neuralLink: "OFFLINE"
+      message: "NÚCLEO TÉRMICO OPERATIVO",
+      load: 42.5,
+      stability: "ESTABLE",
+      neuralLink: "SYNC_OK"
     };
   }
 };

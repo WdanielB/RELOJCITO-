@@ -11,15 +11,19 @@ const App: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [drift, setDrift] = useState({ x: 0, y: 0 });
 
-  const fetchStatus = async () => {
-    const newStatus = await getSystemStatus();
-    setStatus(newStatus);
-  };
+  const fetchStatus = useCallback(async () => {
+    try {
+      const newStatus = await getSystemStatus();
+      setStatus(newStatus);
+    } catch (e) {
+      console.error("Fallo al actualizar status");
+    }
+  }, []);
 
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+        console.error(`Error de pantalla completa: ${err.message}`);
       });
     } else {
       document.exitFullscreen();
@@ -33,10 +37,11 @@ const App: React.FC = () => {
     fetchStatus();
     const interval = setInterval(fetchStatus, 300000);
 
+    // Protección de quemado (Burn-in) global
     const driftTimer = setInterval(() => {
       setDrift({
-        x: (Math.random() - 0.5) * 20,
-        y: (Math.random() - 0.5) * 30
+        x: (Math.random() - 0.5) * 40,
+        y: (Math.random() - 0.5) * 40
       });
     }, 120000);
 
@@ -45,60 +50,53 @@ const App: React.FC = () => {
       clearInterval(interval);
       clearInterval(driftTimer);
     };
-  }, []);
+  }, [fetchStatus]);
 
   return (
-    <div className="relative w-screen h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
-      {/* Background Layer */}
+    <div className="relative w-screen h-screen bg-black flex flex-col items-center justify-center overflow-hidden font-['Orbitron']">
+      {/* Capa de Fondo */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-950/5 via-black to-black"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-950/10 via-black to-black"></div>
         <OrbitVisualizer />
       </div>
 
-      {/* Main UI Container with Drift */}
+      {/* Interfaz de Usuario con Drift AOD */}
       <div 
-        className="relative z-10 w-full flex flex-col items-center transition-transform duration-[8000ms] ease-in-out"
+        className="relative z-10 w-full flex flex-col items-center transition-transform duration-[10000ms] ease-in-out px-10"
         style={{ transform: `translate(${drift.x}px, ${drift.y}px)` }}
       >
-        {/* Top Module: Pomodoro (Horizontal redesigned) */}
+        {/* Pomodoro Superior Horizontal */}
         <Pomodoro />
 
-        {/* Center Module: Clock */}
+        {/* Reloj Central imponente */}
         <FuturisticClock onStatusUpdate={setStatus} />
       </div>
 
-      {/* Neural Feed Footer */}
-      <div className="absolute bottom-10 sm:bottom-12 w-full flex flex-col items-center z-20 px-6 pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-center space-x-2 mb-2">
-          <div className="w-1 h-1 bg-red-600 rounded-full animate-pulse shadow-[0_0_5px_#ff0000]" />
-          <span className="text-[8px] sm:text-[10px] text-red-900 font-mono tracking-widest">AOD_STREAM_CONNECTED</span>
+      {/* Footer de datos técnicos */}
+      <div className="absolute bottom-8 w-full flex flex-col items-center z-20 px-6 opacity-40">
+        <div className="flex items-center space-x-2 mb-1">
+          <div className="w-1 h-1 bg-red-600 rounded-full animate-pulse shadow-[0_0_8px_#ff0000]" />
+          <span className="text-[8px] text-red-900 font-mono tracking-[0.3em]">SYSTEM_STABLE_AOD</span>
         </div>
-        <div className="max-w-xs sm:max-w-md text-center">
-          <p className="font-mono text-[10px] text-red-500/70 tracking-tight uppercase">
-            {status?.message || "CALIBRATING_QUANTUM_FIELD..."}
-          </p>
-        </div>
+        <p className="font-mono text-[9px] text-red-700 uppercase tracking-tighter">
+          {status?.message || "CALIBRANDO_MATRIZ_DE_PLASMA..."}
+        </p>
       </div>
 
-      {/* Fullscreen Button */}
+      {/* Botón de Interfaz */}
       <button 
         onClick={toggleFullscreen}
-        className="absolute bottom-4 right-4 z-50 p-2 border border-red-500/20 rounded bg-black/40 backdrop-blur-sm active:scale-95 transition-all"
+        className="absolute bottom-6 right-6 z-50 p-2 border border-red-900/40 rounded bg-red-950/5 hover:bg-red-900/20 active:scale-90 transition-all"
       >
-        <div className="flex flex-col items-end">
-          <span className="text-[8px] text-red-500 font-mono tracking-tighter uppercase">
-            {isFullscreen ? "LOCK_AOD" : "DEPLOY_INTERFACE"}
-          </span>
-          <div className="w-4 h-[1px] bg-red-500/50 mt-1" />
-        </div>
+        <span className="text-[7px] text-red-600 font-mono tracking-widest uppercase">
+          {isFullscreen ? "LOCK" : "DEPLOY"}
+        </span>
       </button>
 
-      {/* Status Indicators Top Right */}
-      <div className="absolute top-4 right-4 flex items-center space-x-1.5 opacity-40">
-        <div className="text-[8px] font-mono text-red-500 mr-2">{status?.load.toFixed(0) || "0"}%</div>
-        {[1, 2, 3, 4].map(i => (
-          <div key={i} className={`w-2 h-0.5 rounded-full ${i < 4 ? 'bg-red-500' : 'bg-gray-800'}`} />
-        ))}
+      {/* Monitores laterales (sólo decorativos para el look futurista) */}
+      <div className="absolute top-6 left-6 hidden sm:flex flex-col space-y-1 opacity-20">
+         <div className="text-[7px] text-red-500 font-mono">LAT: 37.77 / LON: -122.41</div>
+         <div className="text-[7px] text-red-500 font-mono">CORE_TEMP: 32.4°C</div>
       </div>
     </div>
   );

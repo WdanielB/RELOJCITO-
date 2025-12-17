@@ -6,7 +6,7 @@ const OrbitVisualizer: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || typeof d3 === 'undefined') return;
 
     const render = () => {
       const width = window.innerWidth;
@@ -20,25 +20,25 @@ const OrbitVisualizer: React.FC = () => {
       const g = svg.append('g')
         .attr('transform', `translate(${width / 2}, ${height / 2})`);
 
-      // Mobile friendly rings (fewer rings for performance)
-      const rings = [80, 150, 230, 320];
+      // Rings optimized for horizontal/landscape
+      const rings = [100, 180, 280, 400];
       
       rings.forEach((radius, i) => {
         g.append('circle')
           .attr('r', radius)
           .attr('fill', 'none')
-          .attr('stroke', 'rgba(0, 255, 255, 0.04)')
+          .attr('stroke', 'rgba(255, 0, 0, 0.05)')
           .attr('stroke-width', 0.5);
 
         const orbitG = g.append('g');
         
         orbitG.append('circle')
-          .attr('r', 1.5 + Math.random() * 2)
+          .attr('r', 2 + Math.random() * 2)
           .attr('cx', radius)
-          .attr('fill', i % 2 === 0 ? '#00FFFF' : '#FF00FF')
-          .style('opacity', 0.4);
+          .attr('fill', i % 2 === 0 ? '#ff0000' : '#ff5500')
+          .style('opacity', 0.3);
 
-        const duration = 15000 + Math.random() * 25000;
+        const duration = 20000 + Math.random() * 30000;
         function repeat() {
           orbitG.transition()
             .duration(duration)
@@ -54,8 +54,9 @@ const OrbitVisualizer: React.FC = () => {
     };
 
     render();
-    window.addEventListener('resize', render);
-    return () => window.removeEventListener('resize', render);
+    const handleResize = () => render();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
 
   }, []);
 
@@ -63,7 +64,7 @@ const OrbitVisualizer: React.FC = () => {
     <svg 
       ref={svgRef} 
       className="absolute top-0 left-0 pointer-events-none"
-      style={{ opacity: 0.3 }}
+      style={{ opacity: 0.4 }}
     />
   );
 };
