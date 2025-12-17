@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>NOVA AOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100;400;700&display=swap" rel="stylesheet">
     <style>
       body {
         margin: 0;
@@ -17,38 +17,24 @@
         overflow: hidden;
         font-family: 'Orbitron', sans-serif;
         user-select: none;
+        -webkit-tap-highlight-color: transparent;
       }
-      /* Estado inicial */
       #root:empty::before {
-        content: "BOOT_SEQUENCE_INIT...";
+        content: "NUCLEO_SYNCING...";
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
-        letter-spacing: 0.8em;
+        font-size: 10px;
+        letter-spacing: 1em;
         color: #ff0000;
         animation: pulse 1s infinite;
       }
-      @keyframes pulse {
-        0%, 100% { opacity: 0.1; }
-        50% { opacity: 1; }
-      }
-      #debug-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        background: rgba(255, 0, 0, 0.1);
-        color: #ff5555;
-        font-family: monospace;
-        font-size: 12px;
-        padding: 10px;
-        display: none;
-        z-index: 10000;
-        border-bottom: 1px solid red;
-      }
+      @keyframes pulse { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
+      
+      /* Ocultar scrollbars */
+      ::-webkit-scrollbar { display: none; }
     </style>
     <script type="importmap">
 {
@@ -64,17 +50,7 @@
 </script>
   </head>
   <body>
-    <div id="debug-overlay"></div>
     <div id="root"></div>
-    <script>
-      // Capturador de errores inmediato
-      window.onerror = function(m, u, l) {
-        const d = document.getElementById('debug-overlay');
-        d.style.display = 'block';
-        d.innerText = "CRITICAL_ERROR: " + m + " at " + l;
-      };
-    </script>
-    <!-- Carga directa del punto de entrada -->
     <script type="module" src="index.tsx"></script>
   </body>
 </html>
