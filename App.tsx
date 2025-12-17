@@ -11,45 +11,51 @@ const App: React.FC = () => {
   const [drift, setDrift] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    // Carga inicial de datos
-    getSystemStatus().then(setStatus);
+    // Carga inicial de datos mock
+    const loadStatus = async () => {
+      const data = await getSystemStatus();
+      setStatus(data);
+    };
+    loadStatus();
     
-    // Protección contra quemado (Burn-in protection)
-    // Mueve los elementos sutilmente cada 2 minutos
+    // Protección contra quemado (Burn-in protection) para pantallas OLED
     const driftInterval = setInterval(() => {
       setDrift({
-        x: (Math.random() - 0.5) * 30,
-        y: (Math.random() - 0.5) * 30
+        x: (Math.random() - 0.5) * 20,
+        y: (Math.random() - 0.5) * 20
       });
-    }, 120000);
+    }, 60000);
 
     return () => clearInterval(driftInterval);
   }, []);
 
   return (
     <div className="relative w-screen h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
-      {/* Fondo con órbitas sutiles */}
+      {/* Visualización de fondo */}
       <div className="absolute inset-0 z-0">
         <OrbitVisualizer />
       </div>
 
-      {/* Contenido principal con drift protector */}
+      {/* Interfaz con desplazamiento protector sutil */}
       <div 
-        className="relative z-10 flex flex-col items-center justify-center space-y-12 transition-transform duration-[10000ms] ease-in-out"
+        className="relative z-10 flex flex-col items-center justify-center space-y-16 transition-transform duration-[10000ms] ease-in-out"
         style={{ transform: `translate(${drift.x}px, ${drift.y}px)` }}
       >
         <FuturisticClock onStatusUpdate={() => {}} />
         
-        <div className="w-full max-w-xs sm:max-w-md">
+        <div className="w-64 sm:w-80">
           <Pomodoro />
         </div>
       </div>
 
-      {/* Footer de sistema */}
-      <div className="absolute bottom-8 flex flex-col items-center opacity-20 pointer-events-none">
-        <span className="text-[8px] font-mono tracking-[0.5em] text-red-500 mb-1">STABLE_CORE_V2</span>
-        <span className="text-[10px] font-mono text-red-700 uppercase">
-          {status?.message || "SYNCHRONIZING..."}
+      {/* Telemetría inferior */}
+      <div className="absolute bottom-10 flex flex-col items-center opacity-30 pointer-events-none font-mono">
+        <div className="flex items-center space-x-2 mb-1">
+          <div className="w-1 h-1 bg-red-600 rounded-full animate-pulse"></div>
+          <span className="text-[8px] tracking-[0.4em] text-red-500">AOD_LINK_ACTIVE</span>
+        </div>
+        <span className="text-[10px] text-red-700 uppercase">
+          {status?.message || "CALIBRATING_SENSORS..."}
         </span>
       </div>
     </div>
