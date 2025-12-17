@@ -6,32 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Nova AOD - Red Edition</title>
+    <title>NOVA AOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@100;300;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100;500&display=swap" rel="stylesheet">
     <style>
       body {
         margin: 0;
         background-color: black;
-        color: white;
+        color: #ff0000;
         overflow: hidden;
         font-family: 'Orbitron', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-        touch-action: none;
       }
-      ::-webkit-scrollbar {
-        display: none;
+      #root:empty::before {
+        content: "INITIALIZING_AOD_CORE...";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.5em;
+        animation: pulse 2s infinite;
       }
-      :root {
-        --safe-bottom: env(safe-area-inset-bottom);
-        --safe-top: env(safe-area-inset-top);
-      }
-      /* Previene el parpadeo inicial */
-      #root:empty {
-        background: black;
-        width: 100vw;
-        height: 100vh;
+      @keyframes pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
       }
     </style>
     <script type="importmap">
@@ -49,7 +48,5 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Script de entrada crítico para asegurar que la App cargue -->
-    <script type="module" src="index.tsx"></script>
   </body>
 </html>
